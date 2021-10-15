@@ -1,18 +1,18 @@
-<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 618 90" class="h-5">
+<script>
+	export let style;
+</script>
+
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 618 90" class={style}>
 	<title>logo-svg</title>
 	<style xmlns="http://www.w3.org/2000/svg">
 		tspan {
 			white-space: pre;
 		}
 		.shp0 {
-			fill: #f1ca00;
-			stroke: #f1ca00;
-			stroke-width: 0;
+			@apply stroke-0 fill-blue-600 dark:fill-yellow-500;
 		}
 		.shp1 {
-			fill: #9d9d9f;
-			stroke: #9d9d9f;
-			stroke-width: 0;
+			@apply stroke-0 fill-yellow-500 dark:fill-blue-600;
 		}
 	</style>
 	<g id="Layer">

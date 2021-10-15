@@ -29,7 +29,7 @@
 >
 	<Hamburger bind:open={sidebar} />
 	<div class="relative">
-		<Logo />
+		<Logo style="h-5" />
 	</div>
 
 	<div class="hidden sm:inline-flex">
@@ -105,10 +105,14 @@
 		</div>
 		<!--End WindiCSS dropdown menu-->
 
-		<button class="navButton navSelect mx-2 rounded-lg hover:text-light-100 text-lg p-2"
+		<button
+			class="navButton navSelect mx-2 rounded-lg hover:text-light-100 focus:outline-none text-lg p-2"
 			>Connect Wallet</button
 		>
-		<button class="navButton navSelect mx-2 hover:text-light-100 rounded-lg p-2" on:click={toggle}>
+		<button
+			class="navButton navSelect mx-2 hover:text-light-100 rounded-lg p-2 focus:outline-none"
+			on:click={toggle}
+		>
 			{#if toggled !== null}
 				{#if $theme === 'light'}
 					<svg
