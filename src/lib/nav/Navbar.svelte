@@ -28,15 +28,15 @@
 	class="flex justify-between bg-opacity-80 text-gray-800 dark:text-light-100 p-4 items-center"
 >
 	<Hamburger bind:open={sidebar} />
-	<div class="relative">
-		<Logo style="h-5" />
+	<div class="hidden lg:block">
+		<Logo style="h-10" />
 	</div>
 
-	<div class="hidden sm:inline-flex">
+	<div class="inline-flex justify between">
 		<!--Start WindiCSS dropdown menu-->
-		<div class="relative group">
+		<div class="group">
 			<button
-				class="flex navButton navSelect text-gray-800 hover:text-light-100 dark:text-light-100 mx-2 rounded-lg text-lg p-2 inline-flex items-center focus:outline-none"
+				class="flex navButton navSelect text-gray-800 hover:text-light-100 dark:text-light-100 mx-2 rounded-md text-md p-2 inline-flex items-center focus:outline-none"
 			>
 				<svg
 					class="h-5 w-5 fill-current"
@@ -106,9 +106,10 @@
 		<!--End WindiCSS dropdown menu-->
 
 		<button
-			class="navButton navSelect mx-2 rounded-lg hover:text-light-100 focus:outline-none text-lg p-2"
-			>Connect Wallet</button
+			class="navButton w-full navSelect mx-2 rounded-lg hover:text-light-100 focus:outline-none text-md p-2"
 		>
+			Connect Wallet
+		</button>
 		<button
 			class="navButton navSelect mx-2 hover:text-light-100 rounded-lg p-2 focus:outline-none"
 			on:click={toggle}

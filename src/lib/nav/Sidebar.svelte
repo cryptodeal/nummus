@@ -4,7 +4,7 @@
 </script>
 
 <aside
-	class="absolute flex-col w-full h-full justify-between text-gray-800 sm:w-260px dark:(text-light-100)"
+	class="fixed flex-col w-full h-full justify-between text-gray-800 sm:w-260px dark:(text-light-100)"
 	class:open
 >
 	<!--Start Cloned Design-->
@@ -64,7 +64,7 @@
 		<!--End Menu Links Section-->
 
 		<!--Start External Links Section-->
-		<div class="h-50vh min-h-30vh lg:h-60vh flex flex-col justify-between">
+		<div class="min-h-30vh h-45vh sm:h-50vh lg:h-55vh xl:h-60vh flex flex-col justify-between">
 			<div class="flex flex-col items-start justify-center ml-8">
 				<a
 					href="/forums"
@@ -239,11 +239,11 @@
 	aside {
 		left: -100%;
 		transition: left 0.3s ease-in-out;
-		z-index: 1;
+		z-index: 0;
 	}
 
 	.open {
 		left: 0;
-		z-index: 1;
+		z-index: 15;
 	}
 </style>
