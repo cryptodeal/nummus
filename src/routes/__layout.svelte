@@ -10,6 +10,10 @@
 	}
 
 	let open = false;
+
+	const clickToClose = () => {
+		if (open) open = !open;
+	};
 </script>
 
 <svelte:head>
@@ -29,18 +33,17 @@
 	</script>
 </svelte:head>
 
-<div class="w-full h-full">
-	<div
-		class="backdrop"
-		aria-hidden="true"
-		style="opacity: {open ? 1 : 0}; z-index:{open
-			? 10
-			: -1}; ransition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;"
-	/>
-	<Sidebar bind:open />
-	<Navbar bind:sidebar={open} />
-	<slot />
-</div>
+<div
+	class="backdrop"
+	aria-hidden="true"
+	style="opacity: {open ? 1 : 0}; z-index:{open
+		? 10
+		: -1}; transition: opacity 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;"
+	on:click={clickToClose}
+/>
+<Sidebar bind:open />
+<Navbar bind:sidebar={open} />
+<slot />
 
 <style>
 	.backdrop {
