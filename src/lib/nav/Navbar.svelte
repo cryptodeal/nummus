@@ -24,15 +24,15 @@
 	};
 </script>
 
-<header
-	class="flex justify-between bg-opacity-80 text-gray-800 dark:text-light-100 p-4 items-center"
->
-	<Hamburger bind:open={sidebar} />
-	<div class="hidden lg:block">
+<header class="flex bg-opacity-80 text-gray-800 dark:text-light-100 p-4 items-center">
+	<div class="flex justify-start lg:(w-1/3)">
+		<Hamburger bind:open={sidebar} />
+	</div>
+	<div class="hidden lg:(flex justify-center w-1/3)">
 		<Logo style="h-10" />
 	</div>
 
-	<div class="inline-flex justify between">
+	<div class="flex w-full justify-end lg:w-1/3">
 		<!--Start WindiCSS dropdown menu-->
 		<div class="group">
 			<button
@@ -52,13 +52,15 @@
 				<span class="ml-2">NUM</span>
 			</button>
 			<div class="absolute z-10 hidden group-hover:(block)">
-				<div class="px-2 mt-3 navButton pt-2 shadow-lg rounded-xl">
+				<div class="px-2 mt-3 navButton dropdown pt-2 shadow-lg rounded-xl">
 					<div class="flex flex-col py-4 px-2 w-200px max-w-200px">
 						<div class="pb-4 block w-full m-0">
 							<a href="#null" target="_blank" class="w-full m-0">
-								<button class="navSelect mb-1 pl-4 py-2 w-full inline-flex rounded-lg">
+								<button
+									class="navSelect mb-1 text-gray-800 dark:text-light-100 hover:text-light-100 pl-4 py-2 w-full inline-flex items-center rounded-lg"
+								>
 									<span>
-										<p class="text-left hover:text-light-100 text-md m-0">Buy on Sushiswap</p>
+										<p class="text-left text-md m-0">Buy on Sushiswap</p>
 									</span>
 									<svg
 										viewBox="0 0 20 20"
@@ -67,7 +69,6 @@
 										xmlns="http://www.w3.org/2000/svg"
 										class="fill-current pl-1"
 										focusable="false"
-										color="#A3A3A3"
 										aria-hidden="true"
 									>
 										<path
@@ -77,9 +78,11 @@
 								</button>
 							</a>
 							<a href="#null" target="_blank" class="w-full m-0">
-								<button class="navSelect mb-1 pl-4 py-2 w-full inline-flex rounded-lg">
+								<button
+									class="navSelect text-gray-800 hover:text-light-100 dark:text-light-100 mb-1 pl-4 py-2 w-full inline-flex items-center rounded-lg"
+								>
 									<span>
-										<p class="text-left hover:text-light-100 text-md m-0">Buy on Uniswap</p>
+										<p class="text-left text-md m-0">Buy on Uniswap</p>
 									</span>
 									<svg
 										viewBox="0 0 20 20"
@@ -88,7 +91,6 @@
 										xmlns="http://www.w3.org/2000/svg"
 										class="fill-current pl-1"
 										focusable="false"
-										color="#A3A3A3"
 										aria-hidden="true"
 									>
 										<path
@@ -106,7 +108,7 @@
 		<!--End WindiCSS dropdown menu-->
 
 		<button
-			class="navButton w-full navSelect mx-2 rounded-lg hover:text-light-100 focus:outline-none text-md p-2"
+			class="navButton navSelect mx-2 rounded-lg hover:text-light-100 focus:outline-none text-md p-2"
 		>
 			Connect Wallet
 		</button>

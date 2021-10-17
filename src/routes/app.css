@@ -1,16 +1,17 @@
 html {
+	overflow: hidden;
+}
+
+html body {
 	color: #253449;
 	margin: 0;
 	background: linear-gradient(180deg, #afcde9 1%, #f7fbe7 100%);
 	background-color: #afcde9;
 	background-repeat: no-repeat;
 	background-attachment: fixed;
-	overflow: hidden;
-	height: 100vh;
-	width: 100vw;
 }
 
-html.dark {
+html.dark body {
 	color: #fcfcfc;
 	margin: 0;
 	background: linear-gradient(180deg, rgba(8, 15, 53, 0), rgba(0, 0, 10, 0.9)),
@@ -23,9 +24,6 @@ html.dark {
 	background-color: rgba(8, 15, 53, 1);
 	background-repeat: no-repeat;
 	background-attachment: fixed;
-	overflow: hidden;
-	height: 100vh;
-	width: 100vw;
 }
 
 html aside {
@@ -58,4 +56,40 @@ html .navSelect:hover {
 
 ::-webkit-scrollbar {
 	display: none !important;
+}
+
+.dropdown {
+	backdrop-filter: blur(33px);
+}
+
+h4 {
+	@apply font-medium text-2xl;
+}
+
+h5 {
+	@apply text-xl;
+}
+
+.cardLabel {
+	@apply text-blue-gray-500 dark:text-true-gray-400;
+}
+
+.cardLoading {
+	@apply bg-blue-gray-500 dark:bg-true-gray-400 rounded-md;
+}
+
+.cardContent {
+	@apply text-gray-800 dark:text-light-100;
+}
+
+button {
+	@apply focus:outline-none;
+}
+
+.minButton {
+	@apply inline-flex items-center border-black hover:bg-light-100 dark:border-light-100 hover:dark:(text-orange-300 border-orange-300 bg-transparent) border-1px h-33px py-2 px-5 max-h-40px rounded-md whitespace-nowrap;
+}
+
+.colorButton {
+	@apply max-w-300px min-w-240px max-h-40px text-center align-middle flex items-center content-center mb-4 py-1 px-4 rounded-md text-light-100 text-xl whitespace-nowrap bg-blue-gray-400 hover:(bg-blue-gray-500 text-dark-200) font-medium dark:(text-dark-200 bg-orange-300) dark:hover:bg-orange-200;
 }

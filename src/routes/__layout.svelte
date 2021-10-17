@@ -34,16 +34,20 @@
 </svelte:head>
 
 <div
-	class="backdrop"
+	class="backdrop flex sm:hidden"
 	aria-hidden="true"
 	style="opacity: {open ? 1 : 0}; z-index:{open
 		? 10
 		: -1}; transition: opacity 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;"
 	on:click={clickToClose}
 />
-<Sidebar bind:open />
-<Navbar bind:sidebar={open} />
-<slot />
+<div class="h-100vh w-100vw">
+	<Sidebar bind:open />
+	<Navbar bind:sidebar={open} />
+	<div class="h-full overflow-auto p-2">
+		<slot />
+	</div>
+</div>
 
 <style>
 	.backdrop {
@@ -51,7 +55,6 @@
 		left: 0;
 		right: 0;
 		bottom: 0;
-		display: flex;
 		z-index: 0;
 		position: fixed;
 		align-items: center;
