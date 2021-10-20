@@ -1,6 +1,10 @@
 import { getCurrency } from 'locale-currency';
-const EPOCH_INTERVAL = 2200;
-const BLOCK_RATE_SECONDS = 13.14;
+import { ethStore, web3, connected, makeContractStore, chainId } from 'svelte-web3';
+import { EPOCH_INTERVAL, BLOCK_RATE_SECONDS } from '$lib/const/index';
+import { getMarketPrice } from '$lib/helpers/index';
+import { addresses } from '$lib/const/index';
+import { abi as sOHMv2 } from '$lib/abi/sOhmv2.json';
+import { abi as OlympusStakingv2 } from '$lib/abi/OlympusStakingv2.json';
 
 const formatCurrency = (value, locale, numDec) => {
 	return new Intl.NumberFormat(locale, {
@@ -53,4 +57,71 @@ const prettifySeconds = (seconds, resolution) => {
 	return result;
 };
 
-export { formatCurrency, prettifySeconds, calcRebaseTime };
+const initWeb3 = () => {
+	ethStore.setBrowserProvider();
+};
+
+const closeWeb3 = () => {
+	ethStore.close();
+};
+
+const initStakingContract = (chainId) => {
+	return makeContractStore(OlympusStakingv2, addresses[chainId].STAKING_ADDRESS);
+};
+
+const initSohmMainContract = (chainId) => {
+	return makeContractStore(sOHMv2, addresses[chainId].SOHM_ADDRESS);
+};
+
+const calcContractData = async (stakingContract, sOhmMainContract) => {
+	// Calculating staking
+	const epoch = await stakingContract.methods.epoch().call();
+	const stakingReward = epoch.distribute;
+	const circ = await sOhmMainContract.methods.circulatingSupply().call();
+	const stakingRebase = stakingReward / circ;
+	const fiveDayRate = Math.pow(1 + stakingRebase, 5 * 3) - 1;
+	const stakingAPY = Math.pow(1 + stakingRebase, 365 * 3) - 1;
+
+	// Current index
+	const currentIndex = await stakingContract.methods.index().call();
+	//console.log(currentIndex)
+
+	return {
+		currentIndex,
+		fiveDayRate,
+		stakingAPY,
+		//stakingTVL,
+		stakingRebase
+		//marketCap,
+		//marketPrice,
+		//circSupply,
+		//totalSupply,
+	};
+};
+
+const getContractData = (stakingContract, sOhmMainContract, web3) => {
+	return calcContractData(stakingContract, sOhmMainContract)
+		.then(({ currentIndex, fiveDayRate, stakingAPY, stakingRebase }) => {
+			return {
+				currentIndex: web3.utils.fromWei(`${currentIndex}`, 'gwei'),
+				fiveDayRate,
+				stakingAPY,
+				stakingRebase
+			};
+		})
+		.then((data) => {
+			return data;
+		});
+};
+
+export {
+	formatCurrency,
+	prettifySeconds,
+	calcRebaseTime,
+	initWeb3,
+	closeWeb3,
+	calcContractData,
+	initStakingContract,
+	initSohmMainContract,
+	getContractData
+};

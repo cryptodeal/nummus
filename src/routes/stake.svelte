@@ -2,11 +2,65 @@
 	import { ohmGraph } from '$lib/stores/api/graph';
 	import getUserLocale from 'get-user-locale';
 	import { browser } from '$app/env';
-	import { formatCurrency } from '$lib/utils';
-	import { calcRebaseTime, prettifySeconds } from '$lib/utils';
+	import {
+		calcRebaseTime,
+		formatCurrency,
+		prettifySeconds,
+		getContractData,
+		initStakingContract,
+		initSohmMainContract
+	} from '$lib/utils';
+	import { connected, web3, chainId } from 'svelte-web3';
+	import { trim } from '$lib/helpers/index';
+	import { web3Socket } from '$lib/stores/api/ethSocket';
+
 	let locale;
 	if (browser) locale = getUserLocale();
-	$: rebaseTime = calcRebaseTime($ohmGraph.currentBlock);
+	if (browser) $web3Socket.eth.getBlockNumber().then(console.log);
+	const getCurrentBlock = () => {
+		if ($connected) {
+			return $web3.eth
+				.getBlockNumber()
+				.then((block) => {
+					return calcRebaseTime(block);
+				})
+				.then((time) => {
+					return prettifySeconds(time);
+				});
+		} else if ($ohmGraph) {
+			const time = calcRebaseTime($ohmGraph.currentBlock);
+			return prettifySeconds(time);
+		}
+	};
+
+	const formatTime = (block) => {
+		if (block) {
+			const time = calcRebaseTime(block);
+			return prettifySeconds(time);
+		}
+	};
+
+	let stakingContract;
+	let sOhmMainContract;
+	let data;
+	let currentBlock;
+
+	$: if ($connected) {
+		stakingContract = initStakingContract($chainId);
+		sOhmMainContract = initSohmMainContract($chainId);
+	}
+	$: if ($connected) {
+		data = getContractData($stakingContract, $sOhmMainContract, $web3).then((data) => {
+			return data;
+		});
+	}
+	$: console.log(data);
+
+	$: currentBlock = browser
+		? $web3Socket.eth.getBlockNumber().then((block) => {
+				return block;
+		  })
+		: null;
 </script>
 
 <div class="flex flex-col justify-center items-center pt-5 pb-8 px-8 mb-7">
@@ -18,10 +72,23 @@
 				<div class="w-full h-min-33px mb-4">
 					<h5 class="font-semibold">Single Stake (3, 3)</h5>
 					<div class="m-0 relative leading-none">
-						<p class="text-xs">
-							<!--TODO: Add reactive countdown based on time to rebase-->
-							<strong>{prettifySeconds(rebaseTime)}</strong> to next rebase
-						</p>
+						{#if currentBlock == null}
+							<div class="flex justify-start cardLabel animate-pulse">
+								<div class="cardLoading h-3 w-40 rounded-lg w-full" />
+							</div>
+						{:else}
+							{#await currentBlock}
+								<div class="flex justify-start cardLabel animate-pulse">
+									<div class="cardLoading h-3 w-40 rounded-lg w-full" />
+								</div>
+							{:then rebaseTime}
+								<p class="text-xs">
+									<strong>{formatTime(rebaseTime)}</strong> to next rebase
+								</p>
+							{:catch error}
+								<p class="text-red-700 text-xs">{error.message}</p>
+							{/await}
+						{/if}
 					</div>
 				</div>
 			</div>
@@ -35,7 +102,21 @@
 						>
 							<h5 class="cardLabel">APY</h5>
 							<!--TODO: Add reactive APY based on contract-->
-							<h4 class="cardContent font-medium">7,831.9%</h4>
+							{#if data == null}
+								<div class="flex justify-start md:justify-center cardLabel animate-pulse">
+									<div class="cardLoading h-6 w-24 rounded-lg w-full" />
+								</div>
+							{:else}
+								{#await data}
+									<div class="flex justify-start md:justify-center cardLabel animate-pulse">
+										<div class="cardLoading h-6 w-20 rounded-lg w-full" />
+									</div>
+								{:then { stakingAPY }}
+									<h4 class="cardContent font-medium">{trim(stakingAPY * 100, 1)}%</h4>
+								{:catch error}
+									<h4 class="cardContent text-red-700 font-medium">{error.message}</h4>
+								{/await}
+							{/if}
 						</div>
 						<!--Flex Item 2: Total Value Deposited-->
 						<div
@@ -48,8 +129,8 @@
 									{formatCurrency($ohmGraph.stakingTVL, locale)}
 								</h4>
 							{:else}
-								<div class="flex cardLabel animate-pulse">
-									<div class="cardLoading h-4 rounded-lg w-full" />
+								<div class="flex justify-start md:justify-center cardLabel pt-2 animate-pulse">
+									<div class="cardLoading h-6 w-50 rounded-lg w-full" />
 								</div>
 							{/if}
 						</div>
@@ -59,7 +140,21 @@
 						>
 							<h5 class="cardLabel">Current Index</h5>
 							<!--TODO: Add reactive Total Value Deposited based on contract-->
-							<h4 class="cardContent font-medium">23.4 NUM</h4>
+							{#if data == null}
+								<div class="flex justify-start md:justify-center cardLabel animate-pulse">
+									<div class="cardLoading h-6 w-24 rounded-lg w-full" />
+								</div>
+							{:else}
+								{#await data}
+									<div class="flex justify-start md:justify-center cardLabel animate-pulse">
+										<div class="cardLoading h-6 w-24 rounded-lg w-full" />
+									</div>
+								{:then { currentIndex }}
+									<h4 class="cardContent font-medium">{trim(currentIndex, 1)} NUM</h4>
+								{:catch error}
+									<h4 class="cardContent text-red-700 font-medium">{error.message}</h4>
+								{/await}
+							{/if}
 						</div>
 					</div>
 				</div>

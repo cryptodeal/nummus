@@ -7,6 +7,16 @@ const config = {
 		target: '#svelte',
 		vite: {
 			plugins: [WindiCSS()]
+			/*
+      build: {
+        commonjsOptions: {
+          transformMixedEsModules: true,
+        },
+      },
+      optimizeDeps: {
+				include: ['@walletconnect/web3-provider']
+			},
+      */
 		}
 	}
 };
