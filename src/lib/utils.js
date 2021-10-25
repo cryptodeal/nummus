@@ -1,10 +1,14 @@
 import { getCurrency } from 'locale-currency';
-import { ethStore, web3, connected, makeContractStore, chainId } from 'svelte-web3';
+import { ethStore, web3, connected, makeContractStore, chainData } from '$lib/stores/api/wallet';
+import { web3Socket } from './stores/api/ethSocket';
 import { EPOCH_INTERVAL, BLOCK_RATE_SECONDS } from '$lib/const/index';
-import { getMarketPrice } from '$lib/helpers/index';
+//import { getMarketPrice } from '$lib/helpers/index';
 import { addresses } from '$lib/const/index';
 import { abi as sOHMv2 } from '$lib/abi/sOhmv2.json';
 import { abi as OlympusStakingv2 } from '$lib/abi/OlympusStakingv2.json';
+import { formatUnits } from '@ethersproject/units';
+import { calcAludelDetes } from '$lib/helpers/OhmLusdCrucible';
+import { Contract } from '@ethersproject/contracts';
 
 const formatCurrency = (value, locale, numDec) => {
 	return new Intl.NumberFormat(locale, {
@@ -65,29 +69,62 @@ const closeWeb3 = () => {
 	ethStore.close();
 };
 
-const initStakingContract = (chainId) => {
-	return makeContractStore(OlympusStakingv2, addresses[chainId].STAKING_ADDRESS);
+const initStakingContract = () => {
+	let networkId;
+	let isConnected;
+	let socketProvider;
+	connected.subscribe((value) => {
+		isConnected = value;
+	});
+	if (!isConnected) {
+		web3Socket.subscribe((provider) => {
+			socketProvider = provider;
+		});
+		return new Contract(addresses[1].STAKING_ADDRESS, OlympusStakingv2, socketProvider);
+	} else {
+		chainData.subscribe((data) => {
+			networkId = data['networkId'];
+		});
+		return makeContractStore(OlympusStakingv2, addresses[networkId].STAKING_ADDRESS);
+	}
 };
 
-const initSohmMainContract = (chainId) => {
-	return makeContractStore(sOHMv2, addresses[chainId].SOHM_ADDRESS);
+const initSohmMainContract = () => {
+	let networkId;
+	let isConnected;
+	let socketProvider;
+	connected.subscribe((value) => {
+		isConnected = value;
+	});
+	if (!isConnected) {
+		web3Socket.subscribe((provider) => {
+			socketProvider = provider;
+		});
+		return new Contract(addresses[1].SOHM_ADDRESS, sOHMv2, socketProvider);
+	} else {
+		chainData.subscribe((data) => {
+			networkId = data['networkId'];
+		});
+		return makeContractStore(sOHMv2, addresses[networkId].SOHM_ADDRESS);
+	}
 };
 
-const calcContractData = async (stakingContract, sOhmMainContract) => {
+const getContractData = async (stakingContract, sOhmMainContract) => {
 	// Calculating staking
-	const epoch = await stakingContract.methods.epoch().call();
+	const epoch = await stakingContract.epoch();
 	const stakingReward = epoch.distribute;
-	const circ = await sOhmMainContract.methods.circulatingSupply().call();
+	//console.log(stakingReward)
+	const circ = await sOhmMainContract.circulatingSupply();
 	const stakingRebase = stakingReward / circ;
 	const fiveDayRate = Math.pow(1 + stakingRebase, 5 * 3) - 1;
 	const stakingAPY = Math.pow(1 + stakingRebase, 365 * 3) - 1;
 
 	// Current index
-	const currentIndex = await stakingContract.methods.index().call();
+	const currentIndex = await stakingContract.index();
 	//console.log(currentIndex)
 
 	return {
-		currentIndex,
+		currentIndex: formatUnits(`${currentIndex}`, 'gwei'),
 		fiveDayRate,
 		stakingAPY,
 		//stakingTVL,
@@ -99,19 +136,36 @@ const calcContractData = async (stakingContract, sOhmMainContract) => {
 	};
 };
 
-const getContractData = (stakingContract, sOhmMainContract, web3) => {
-	return calcContractData(stakingContract, sOhmMainContract)
-		.then(({ currentIndex, fiveDayRate, stakingAPY, stakingRebase }) => {
-			return {
-				currentIndex: web3.utils.fromWei(`${currentIndex}`, 'gwei'),
-				fiveDayRate,
-				stakingAPY,
-				stakingRebase
-			};
-		})
-		.then((data) => {
-			return data;
+const getOhmLusdCrucibleData = async () => {
+	let networkId;
+	let provider;
+	let isConnected;
+	connected.subscribe((value) => {
+		isConnected = value;
+	});
+	if (isConnected) {
+		chainData.subscribe((data) => {
+			networkId = data['networkId'];
 		});
+		web3.subscribe((value) => {
+			provider = value;
+		});
+	} else {
+		networkId = 1;
+		web3Socket.subscribe((socketProvider) => {
+			provider = socketProvider;
+		});
+	}
+	//console.log(`networkId: ${networkId}`)
+	const crucibleDetes = await calcAludelDetes(networkId, provider);
+	let avgApy = crucibleDetes.averageApy;
+	if (isNaN(avgApy)) avgApy = 0;
+	return {
+		apy: avgApy,
+		tvl: crucibleDetes.tvlUsd
+		// NOTE (appleseed): balance is in accountSlice for the bond
+		// balance: ethers.utils.formatUnits(sushiOhmLusdBalance, "gwei"),
+	};
 };
 
 export {
@@ -120,8 +174,8 @@ export {
 	calcRebaseTime,
 	initWeb3,
 	closeWeb3,
-	calcContractData,
 	initStakingContract,
 	initSohmMainContract,
-	getContractData
+	getContractData,
+	getOhmLusdCrucibleData
 };

@@ -34,7 +34,7 @@
 </svelte:head>
 
 <div
-	class="backdrop flex sm:hidden"
+	class="backdrop flex xl:hidden"
 	aria-hidden="true"
 	style="opacity: {open ? 1 : 0}; z-index:{open
 		? 10

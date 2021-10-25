@@ -4,32 +4,25 @@
 	import Hamburger from './Hamburger.svelte';
 	import { browser } from '$app/env';
 	import { theme } from '$lib/stores/localStore';
-	import { closeWeb3, initWeb3 } from '$lib/utils';
-	import { connected } from 'svelte-web3';
+	import { initWeb3 } from '$lib/utils';
+	import WalletContent from '$lib/ux/wallet/Content.svelte';
+	import Modal from '$lib/ux/Modal.svelte';
 	export let sidebar = false;
+
 	let toggled = null;
 	if (browser) {
 		toggled = localStorage.getItem('theme') === 'dark' ? true : false;
 		//console.log(localStorage.getItem(`ethAuth`))
-		if (browser && window.ethereum && window.ethereum.isConnected()) {
+		if (
+			browser &&
+			window.ethereum &&
+			window.ethereum.isConnected() &&
+			localStorage.getItem(`ethAuth`) === 'true'
+		) {
 			initWeb3();
 		}
 	}
-	const connectWallet = () => {
-		if (browser) {
-			localStorage.setItem('ethAuth', 'true');
-			initWeb3();
-			//initWeb3Modal()
-		}
-	};
 
-	const disconnectWallet = () => {
-		if (browser) {
-			localStorage.setItem('ethAuth', 'false');
-			closeWeb3();
-			//initWeb3Modal()
-		}
-	};
 	//$: console.log($web3Auth)
 	const saveTheme = (mode, toggled) => {
 		theme.set(mode);
@@ -129,21 +122,9 @@
 			</div>
 		</div>
 		<!--End WindiCSS dropdown menu-->
-		{#if !$connected}
-			<button
-				class="navButton navSelect mx-2 rounded-lg hover:text-light-100 focus:outline-none text-md p-2"
-				on:click={connectWallet}
-			>
-				Connect Wallet
-			</button>
-		{:else}
-			<button
-				class="navButton navSelect mx-2 rounded-lg hover:text-light-100 focus:outline-none text-md p-2"
-				on:click={disconnectWallet}
-			>
-				Disconnect
-			</button>
-		{/if}
+		<Modal>
+			<WalletContent />
+		</Modal>
 		<button
 			class="navButton navSelect mx-2 hover:text-light-100 rounded-lg p-2 focus:outline-none"
 			on:click={toggle}

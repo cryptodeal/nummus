@@ -1,10 +1,16 @@
-import { web3 } from 'svelte-web3';
 import { getBondCalculator } from '$lib/helpers/BondCalculator';
 import { addresses } from '$lib/const/index';
+import { Contract } from '@ethersproject/contracts';
+import { abi as ierc20Abi } from '$lib/abi/IERC20.json';
 
 export const NetworkID = {
 	Mainnet: 1,
 	Testnet: 4
+};
+
+export const BondType = {
+	StableAsset: 'StableAsset',
+	LP: 'LP'
 };
 
 export class Bond {
@@ -23,7 +29,7 @@ export class Bond {
 	}
 	getContractForBond(networkID, provider) {
 		const bondAddress = this.getAddressForBond(networkID);
-		return web3.Contract(bondAddress, this.bondContractABI, provider);
+		return new Contract(bondAddress, this.bondContractABI, provider);
 	}
 
 	getAddressForReserve(networkID) {
@@ -32,7 +38,7 @@ export class Bond {
 
 	getContractForReserve(networkID, provider) {
 		const bondAddress = this.getAddressForReserve(networkID);
-		return web3.Contract(bondAddress, this.reserveContract, provider);
+		return new Contract(bondAddress, this.reserveContract, provider);
 	}
 
 	async getBondReservePrice(networkID, provider) {
@@ -46,7 +52,7 @@ export class Bond {
 
 export class LPBond extends Bond {
 	constructor(lpBondOpts) {
-		super('LP', lpBondOpts);
+		super(BondType.LP, lpBondOpts);
 
 		this.lpUrl = lpBondOpts.lpUrl;
 		this.reserveContract = lpBondOpts.reserveContract;
@@ -61,5 +67,23 @@ export class LPBond extends Bond {
 		const markdown = await bondCalculator.markdown(tokenAddress);
 		let tokenUSD = (valuation / Math.pow(10, 9)) * (markdown / Math.pow(10, 18));
 		return tokenUSD;
+	}
+}
+
+// Generic BondClass we should be using everywhere
+// Assumes the token being deposited follows the standard ERC20 spec
+export class StableBond extends Bond {
+	constructor(stableBondOpts) {
+		super(BondType.StableAsset, stableBondOpts);
+
+		// For stable bonds the display units are the same as the actual token
+		this.displayUnits = stableBondOpts.displayName;
+		this.reserveContract = ierc20Abi; // The Standard ierc20Abi since they're normal tokens
+	}
+
+	async getTreasuryBalance(networkID, provider) {
+		let token = this.getContractForReserve(networkID, provider);
+		let tokenAmount = await token.balanceOf(addresses[networkID].TREASURY_ADDRESS);
+		return tokenAmount / Math.pow(10, 18);
 	}
 }

@@ -1,10 +1,10 @@
 import { ohm_dai } from '$lib/const/bonds';
-import { web3 } from 'svelte-web3';
 import PairContract from '$lib/abi/PairContract.json';
+import { Contract } from '@ethersproject/contracts';
 
 export async function getMarketPrice(networkID) {
 	const ohm_dai_address = ohm_dai.getAddressForReserve(networkID);
-	const pairContract = web3.Contract(ohm_dai_address, PairContract);
+	const pairContract = new Contract(ohm_dai_address, PairContract);
 	const reserves = await pairContract.getReserves();
 	const marketPrice = reserves[1] / reserves[0];
 
@@ -21,4 +21,14 @@ export function trim(number, precision) {
 	array.push(poppedNumber.substring(0, precision));
 	const trimmedNumber = array.join('.');
 	return trimmedNumber;
+}
+
+export async function getTokenPrice(tokenId = 'olympus') {
+	const res = await fetch(
+		`https://api.coingecko.com/api/v3/simple/price?ids=${tokenId}&vs_currencies=usd`
+	);
+	let data = await res.json();
+	//console.log(data)
+	let tokenPrice = data[tokenId].usd;
+	return tokenPrice;
 }

@@ -8,30 +8,15 @@
 		prettifySeconds,
 		getContractData,
 		initStakingContract,
-		initSohmMainContract
+		initSohmMainContract,
+		getOhmLusdCrucibleData
 	} from '$lib/utils';
-	import { connected, web3, chainId } from 'svelte-web3';
+	import { connected, web3 } from '$lib/stores/api/wallet';
 	import { trim } from '$lib/helpers/index';
 	import { web3Socket } from '$lib/stores/api/ethSocket';
 
 	let locale;
 	if (browser) locale = getUserLocale();
-	if (browser) $web3Socket.eth.getBlockNumber().then(console.log);
-	const getCurrentBlock = () => {
-		if ($connected) {
-			return $web3.eth
-				.getBlockNumber()
-				.then((block) => {
-					return calcRebaseTime(block);
-				})
-				.then((time) => {
-					return prettifySeconds(time);
-				});
-		} else if ($ohmGraph) {
-			const time = calcRebaseTime($ohmGraph.currentBlock);
-			return prettifySeconds(time);
-		}
-	};
 
 	const formatTime = (block) => {
 		if (block) {
@@ -43,24 +28,31 @@
 	let stakingContract;
 	let sOhmMainContract;
 	let data;
+	let poolData;
 	let currentBlock;
 
-	$: if ($connected) {
-		stakingContract = initStakingContract($chainId);
-		sOhmMainContract = initSohmMainContract($chainId);
+	$: if (browser) {
+		stakingContract = initStakingContract();
+		sOhmMainContract = initSohmMainContract();
 	}
-	$: if ($connected) {
-		data = getContractData($stakingContract, $sOhmMainContract, $web3).then((data) => {
+	$: if (browser) {
+		data = getContractData(stakingContract, sOhmMainContract).then((data) => {
 			return data;
 		});
-	}
-	$: console.log(data);
 
-	$: currentBlock = browser
-		? $web3Socket.eth.getBlockNumber().then((block) => {
-				return block;
-		  })
-		: null;
+		poolData = getOhmLusdCrucibleData();
+	}
+	//$: console.log(data)
+	$: currentBlock =
+		browser && !$connected
+			? $web3Socket.getBlockNumber().then((block) => {
+					return block;
+			  })
+			: browser && $connected
+			? $web3.getBlockNumber().then((block) => {
+					return block;
+			  })
+			: null;
 </script>
 
 <div class="flex flex-col justify-center items-center pt-5 pb-8 px-8 mb-7">
@@ -104,12 +96,12 @@
 							<!--TODO: Add reactive APY based on contract-->
 							{#if data == null}
 								<div class="flex justify-start md:justify-center cardLabel animate-pulse">
-									<div class="cardLoading h-6 w-24 rounded-lg w-full" />
+									<div class="cardLoading h-6 w-24 rounded-lg" />
 								</div>
 							{:else}
 								{#await data}
 									<div class="flex justify-start md:justify-center cardLabel animate-pulse">
-										<div class="cardLoading h-6 w-20 rounded-lg w-full" />
+										<div class="cardLoading h-6 w-24 rounded-lg" />
 									</div>
 								{:then { stakingAPY }}
 									<h4 class="cardContent font-medium">{trim(stakingAPY * 100, 1)}%</h4>
@@ -249,11 +241,57 @@
 							</tr>
 							<tr class="table-row">
 								<th class="table-cell cardLabel p-2 text-left border-b-0 font-medium">APY</th>
-								<td class="table-cell text-sm p-2 text-right border-b-0 font-medium">473.7%</td>
+								{#if poolData == null}
+									<td
+										class="table-cell text-sm p-2 text-right border-b-0 font-medium animate-pulse"
+									>
+										<div class="cardLoading h-4 rounded-lg w-12" />
+									</td>
+								{:else}
+									{#await poolData}
+										<td
+											class="table-cell text-sm p-2 text-right border-b-0 font-medium animate-pulse"
+										>
+											<div class="cardLoading h-4 rounded-lg w-12" />
+										</td>
+									{:then { apy }}
+										<td class="table-cell text-sm p-2 text-right border-b-0 font-medium"
+											>{trim(apy, 1)}%</td
+										>
+									{:catch error}
+										<td
+											class="table-cell text-sm p-2 text-red-700 text-right border-b-0 font-medium"
+											>{error.message}</td
+										>
+									{/await}
+								{/if}
 							</tr>
 							<tr class="table-row">
 								<th class="table-cell cardLabel p-2 text-left border-b-0 font-medium">TVD</th>
-								<td class="table-cell text-sm p-2 text-right border-b-0 font-medium">$1,443,205</td>
+								{#if poolData == null}
+									<td
+										class="table-cell text-sm p-2 text-right border-b-0 font-medium animate-pulse"
+									>
+										<div class="cardLoading h-4 rounded-lg w-12" />
+									</td>
+								{:else}
+									{#await poolData}
+										<td
+											class="table-cell text-sm p-2 text-right border-b-0 font-medium animate-pulse"
+										>
+											<div class="cardLoading h-4 rounded-lg w-12" />
+										</td>
+									{:then { tvl }}
+										<td class="table-cell text-sm p-2 text-right border-b-0 font-medium"
+											>{formatCurrency(tvl, locale)}</td
+										>
+									{:catch error}
+										<td
+											class="table-cell text-sm p-2 text-red-700 text-right border-b-0 font-medium"
+											>{error.message}</td
+										>
+									{/await}
+								{/if}
 							</tr>
 							<tr class="table-row">
 								<th class="table-cell cardLabel p-2 text-left border-b-0 font-medium">Balance</th>
@@ -261,7 +299,7 @@
 							</tr>
 						</tbody>
 
-						<!-- Screen >- MD Table -->
+						<!-- Screen >= MD Table -->
 						<thead class="hidden md:table-header-group outline-none align-middle border-none">
 							<tr class="table-row cardLabel align-middle outline-transparent border-none">
 								<th class="table-cell p-4 text-left border-b-0 font-medium">Asset</th>
@@ -330,8 +368,49 @@
 										<p class="font-medium text-sm">NUM-LUSD</p>
 									</div>
 								</td>
-								<td class="table-cell text-sm p-4 text-left border-b-0 font-medium">473.7%</td>
-								<td class="table-cell text-sm p-4 text-left border-b-0 font-medium">$1,443,205</td>
+								{#if poolData == null}
+									<td class="table-cell text-sm p-4 text-left border-b-0 font-medium animate-pulse">
+										<div class="cardLoading h-4 rounded-lg w-12" />
+									</td>
+								{:else}
+									{#await poolData}
+										<td
+											class="table-cell text-sm p-4 text-left border-b-0 font-medium animate-pulse"
+										>
+											<div class="cardLoading h-4 w-12 rounded-lg w-full" />
+										</td>
+									{:then { apy }}
+										<td class="table-cell text-sm p-4 text-left border-b-0 font-medium">
+											{trim(apy, 1)}%</td
+										>
+									{:catch error}
+										<td class="table-cell text-sm p-4 text-red-700 text-left border-b-0 font-medium"
+											>{error.message}</td
+										>
+									{/await}
+								{/if}
+								<!--Staking Pool: Total Value Deposited-->
+								{#if poolData == null}
+									<td class="table-cell text-sm p-4 text-left border-b-0 font-medium animate-pulse">
+										<div class="cardLoading h-4 rounded-lg w-12" />
+									</td>
+								{:else}
+									{#await poolData}
+										<td
+											class="table-cell text-sm p-4 text-left border-b-0 font-medium animate-pulse"
+										>
+											<div class="cardLoading h-4 w-12 rounded-lg w-full" />
+										</td>
+									{:then { tvl }}
+										<td class="table-cell text-sm p-4 text-left border-b-0 font-medium">
+											{formatCurrency(tvl, locale)}</td
+										>
+									{:catch error}
+										<td class="table-cell text-sm p-4 text-red-700 text-left border-b-0 font-medium"
+											>{error.message}</td
+										>
+									{/await}
+								{/if}
 								<td class="table-cell text-sm p-4 text-left border-b-0 font-medium">0 SLP</td>
 								<td class="table-cell text-sm p-4 text-left border-b-0 font-medium">
 									<a href="#replaceMe" target="_blank" class="minButton">
