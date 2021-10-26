@@ -7,6 +7,9 @@
 	import { browser } from '$app/env';
 	import { formatCurrency } from '$lib/utils';
 	import StackedArea from '$lib/ux/charts/StackedArea.svelte';
+	import Shadow from '$lib/ux/loading/Shadow.svelte';
+	import Line from '$lib/ux/charts/Line.svelte';
+
 	let locale;
 	if (browser) locale = getUserLocale();
 	$: tvl = $treasuryData
@@ -57,7 +60,25 @@
 				};
 		  })
 		: null;
-	$: console.log($treasuryData);
+
+	$: apyOverTime = $treasuryData
+		? $treasuryData.metrics.map((t) => {
+				return {
+					y: t.currentAPY,
+					x: t.timestamp * 1000
+				};
+		  })
+		: null;
+
+	$: runWay = $treasuryData
+		? $treasuryData.runway.map((t) => {
+				return {
+					y: t.runwayCurrent,
+					x: t.timestamp * 1000
+				};
+		  })
+		: null;
+	//$: console.log($treasuryData);
 	//$: console.log(marketValTAssets)
 </script>
 
@@ -170,15 +191,19 @@
 								</div>
 							</div>
 							<!--Chart-->
-							{#if tvl}
-								<div class="chart">
+							<div class="chart">
+								{#if tvl}
 									<StackedArea
 										data={tvl}
 										colors={[['#768299', '#98B3E9']]}
 										values={['totalValueLocked']}
 									/>
-								</div>
-							{/if}
+								{:else}
+									<div class="flex w-full h-full justify-center items-center">
+										<Shadow />
+									</div>
+								{/if}
+							</div>
 						</div>
 					</div>
 				</div>
@@ -203,8 +228,8 @@
 								</div>
 							</div>
 							<!--Chart-->
-							{#if marketValTAssets}
-								<div class="chart">
+							<div class="chart">
+								{#if marketValTAssets}
 									<StackedArea
 										data={marketValTAssets}
 										colors={[
@@ -220,8 +245,12 @@
 											'treasuryXsushiMarketValue'
 										]}
 									/>
-								</div>
-							{/if}
+								{:else}
+									<div class="flex w-full h-full justify-center items-center">
+										<Shadow />
+									</div>
+								{/if}
+							</div>
 						</div>
 					</div>
 				</div>
@@ -246,8 +275,8 @@
 								</div>
 							</div>
 							<!--Chart-->
-							{#if riskFreeVal}
-								<div class="chart">
+							<div class="chart">
+								{#if riskFreeVal}
 									<StackedArea
 										data={riskFreeVal}
 										colors={[
@@ -258,8 +287,12 @@
 										]}
 										values={['treasuryDaiRiskFreeValue', 'treasuryFraxRiskFreeValue']}
 									/>
-								</div>
-							{/if}
+								{:else}
+									<div class="flex w-full h-full justify-center items-center">
+										<Shadow />
+									</div>
+								{/if}
+							</div>
 						</div>
 					</div>
 				</div>
@@ -284,16 +317,20 @@
 								</div>
 							</div>
 							<!--Chart-->
-							{#if tOhmDaiPOL}
-								<div class="chart">
+							<div class="chart">
+								{#if tOhmDaiPOL}
 									<StackedArea
 										data={tOhmDaiPOL}
 										format={'percent'}
 										colors={[['rgba(128, 204, 131, 1)', 'rgba(128, 204, 131, 0)']]}
 										values={['treasuryOhmDaiPOL']}
 									/>
-								</div>
-							{/if}
+								{:else}
+									<div class="flex w-full h-full justify-center items-center">
+										<Shadow />
+									</div>
+								{/if}
+							</div>
 						</div>
 					</div>
 				</div>
@@ -318,16 +355,20 @@
 								</div>
 							</div>
 							<!--Chart-->
-							{#if ohmStaked}
-								<div class="chart">
+							<div class="chart">
+								{#if ohmStaked}
 									<StackedArea
 										data={ohmStaked}
 										format={'percent'}
 										colors={[['#55EBC7', '#47ACEB']]}
 										values={['staked']}
 									/>
-								</div>
-							{/if}
+								{:else}
+									<div class="flex w-full h-full justify-center items-center">
+										<Shadow />
+									</div>
+								{/if}
+							</div>
 						</div>
 					</div>
 				</div>
@@ -352,6 +393,15 @@
 								</div>
 							</div>
 							<!--Chart-->
+							<div class="chart">
+								{#if ohmStaked}
+									<Line data={apyOverTime} label="APY" format={'percent'} />
+								{:else}
+									<div class="flex w-full h-full justify-center items-center">
+										<Shadow />
+									</div>
+								{/if}
+							</div>
 						</div>
 					</div>
 				</div>
@@ -376,6 +426,15 @@
 								</div>
 							</div>
 							<!--Chart-->
+							<div class="chart">
+								{#if runWay}
+									<Line data={runWay} label={'Days'} format={'percent'} />
+								{:else}
+									<div class="flex w-full h-full justify-center items-center">
+										<Shadow />
+									</div>
+								{/if}
+							</div>
 						</div>
 					</div>
 				</div>

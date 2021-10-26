@@ -80,8 +80,8 @@
 
 <style>
 	.chart {
-		height: 260px;
-		padding: 3em 1em 2em 4em;
+		height: 270px;
+		padding: 0 1.75em 3em 4em;
 		margin: 0 0 36px 0;
 		overflow: hidden;
 	}
