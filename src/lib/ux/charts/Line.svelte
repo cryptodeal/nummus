@@ -3,6 +3,7 @@
 	import * as yootils from 'yootils';
 	export let data;
 	export let label;
+	export let scale;
 	export let format = 'currency';
 	let closest;
 	let x1 = Infinity;
@@ -44,8 +45,13 @@
 	};
 
 	const format_y = (y) => {
+		if (scale === 'log') y = Math.pow(10, y);
 		if (format === 'percent') {
-			return `${y}%`;
+			y = y / 1000;
+			return `${y.toFixed()}k`;
+		}
+		if (format === 'days') {
+			return y.toFixed(0);
 		}
 		let millions = y / 1000000;
 		return `$${yootils.commas(millions)}M`;
@@ -78,11 +84,15 @@
 			<Pancake.Point x={closest.x} y={closest.y}>
 				<span class="annotation-point" />
 				<div
-					class="annotation navButton"
-					style="transform: translate(-{100 * ((closest.x - x1) / (x2 - x1))}%,0)"
+					class="annotation navButton {y2 - closest.y >= closest.y - y1 ? 'locBottom' : 'locTop'}"
+					style="transform: translate(-{100 * ((closest.x - x1) / (x2 - x1))}%,0);"
 				>
 					<strong>{format_Date(closest.x)}</strong>
-					<span>{label}: {closest.y}</span>
+					<span
+						>{label}: {scale == 'log'
+							? Math.pow(10, closest.y).toFixed(2)
+							: closest.y.toFixed()}{format == 'percent' ? '%' : ''}</span
+					>
 				</div>
 			</Pancake.Point>
 		{/if}
@@ -136,10 +146,17 @@
 	.annotation {
 		position: absolute;
 		white-space: nowrap;
-		bottom: 1em;
 		line-height: 1.2;
 		padding: 0.2em 0.4em;
 		border-radius: 2px;
+	}
+
+	.locBottom {
+		bottom: 1em;
+	}
+
+	.locTop {
+		top: 1em;
 	}
 
 	.annotation-point {

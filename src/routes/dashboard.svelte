@@ -3,6 +3,7 @@
 	import Expand from '$lib/assets/Expand.svelte';
 	import { ohmGraph } from '$lib/stores/api/graph';
 	import { treasuryData } from '$lib/stores/api/treasuryMetrics';
+	import { rebaseData } from '$lib/stores/api/rebaseData';
 	import getUserLocale from 'get-user-locale';
 	import { browser } from '$app/env';
 	import { formatCurrency } from '$lib/utils';
@@ -61,10 +62,10 @@
 		  })
 		: null;
 
-	$: apyOverTime = $treasuryData
-		? $treasuryData.metrics.map((t) => {
+	$: apyOverTime = $rebaseData
+		? $rebaseData.map((t) => {
 				return {
-					y: t.currentAPY,
+					y: Math.log10(t.apy),
 					x: t.timestamp * 1000
 				};
 		  })
@@ -78,6 +79,7 @@
 				};
 		  })
 		: null;
+
 	//$: console.log($treasuryData);
 	//$: console.log(marketValTAssets)
 </script>
@@ -388,14 +390,22 @@
 									<Expand />
 								</div>
 								<div class="flex">
-									<h4 class="cardContent font-semibold mr-5px">8008.42%</h4>
+									{#if apyOverTime}
+										<h4 class="cardContent font-semibold mr-5px">
+											{Math.pow(10, apyOverTime[0].y).toFixed(2)}%
+										</h4>
+									{:else}
+										<div class="flex justify-start mr-5px cardLabel pt-2 animate-pulse">
+											<div class="cardLoading h-5 w-26.5 rounded-lg w-full" />
+										</div>
+									{/if}
 									<h4 class="cardLabel font-normal">Today</h4>
 								</div>
 							</div>
 							<!--Chart-->
 							<div class="chart">
-								{#if ohmStaked}
-									<Line data={apyOverTime} label="APY" format={'percent'} />
+								{#if apyOverTime}
+									<Line data={apyOverTime} label="APY" format={'percent'} scale={'log'} />
 								{:else}
 									<div class="flex w-full h-full justify-center items-center">
 										<Shadow />
@@ -421,14 +431,20 @@
 									<Expand />
 								</div>
 								<div class="flex">
-									<h4 class="cardContent font-semibold mr-5px">313.5 Days</h4>
+									{#if runWay}
+										<h4 class="cardContent font-semibold mr-5px">{runWay[0].y.toFixed(1)} Days</h4>
+									{:else}
+										<div class="flex justify-start mr-5px cardLabel pt-2 animate-pulse">
+											<div class="cardLoading h-5 w-30.5 rounded-lg w-full" />
+										</div>
+									{/if}
 									<h4 class="cardLabel font-normal">Today</h4>
 								</div>
 							</div>
 							<!--Chart-->
 							<div class="chart">
 								{#if runWay}
-									<Line data={runWay} label={'Days'} format={'percent'} />
+									<Line data={runWay} label={'Days'} format={'days'} />
 								{:else}
 									<div class="flex w-full h-full justify-center items-center">
 										<Shadow />
