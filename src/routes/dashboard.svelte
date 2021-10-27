@@ -1,6 +1,7 @@
 <script>
 	import Info from '$lib/assets/Info.svelte';
 	import Expand from '$lib/assets/Expand.svelte';
+	import * as yootils from 'yootils';
 	import { ohmGraph } from '$lib/stores/api/graph';
 	import { treasuryData } from '$lib/stores/api/treasuryMetrics';
 	import { rebaseData } from '$lib/stores/api/rebaseData';
@@ -80,7 +81,7 @@
 		  })
 		: null;
 
-	//$: console.log($treasuryData);
+	//$: console.log(riskFreeVal);
 	//$: console.log(marketValTAssets)
 </script>
 
@@ -272,7 +273,15 @@
 									<Expand />
 								</div>
 								<div class="flex">
-									<h4 class="cardContent font-semibold mr-5px">$135,226,067</h4>
+									{#if riskFreeVal}
+										<h4 class="cardContent font-semibold mr-5px">
+											${yootils.commas($treasuryData.metrics[0].treasuryRiskFreeValue.toFixed(0))}
+										</h4>
+									{:else}
+										<div class="flex justify-start mr-5px cardLabel pt-2 animate-pulse">
+											<div class="cardLoading h-5 w-40.5 rounded-lg w-full" />
+										</div>
+									{/if}
 									<h4 class="cardLabel font-normal">Today</h4>
 								</div>
 							</div>
@@ -314,7 +323,15 @@
 									<Expand />
 								</div>
 								<div class="flex">
-									<h4 class="cardContent font-semibold mr-5px">99.88%</h4>
+									{#if tOhmDaiPOL}
+										<h4 class="cardContent font-semibold mr-5px">
+											{tOhmDaiPOL[0].treasuryOhmDaiPOL.toFixed(2)}%
+										</h4>
+									{:else}
+										<div class="flex justify-start mr-5px cardLabel pt-2 animate-pulse">
+											<div class="cardLoading h-5 w-21.5 rounded-lg w-full" />
+										</div>
+									{/if}
 									<h4 class="cardLabel font-normal">Today</h4>
 								</div>
 							</div>
@@ -352,7 +369,15 @@
 									<Expand />
 								</div>
 								<div class="flex">
-									<h4 class="cardContent font-semibold mr-5px">91.11%</h4>
+									{#if ohmStaked}
+										<h4 class="cardContent font-semibold mr-5px">
+											{ohmStaked[0].staked.toFixed(2)}%
+										</h4>
+									{:else}
+										<div class="flex justify-start mr-5px cardLabel pt-2 animate-pulse">
+											<div class="cardLoading h-5 w-21.5 rounded-lg w-full" />
+										</div>
+									{/if}
 									<h4 class="cardLabel font-normal">Today</h4>
 								</div>
 							</div>

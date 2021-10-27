@@ -8,13 +8,15 @@
 	let closest;
 	let x1 = Infinity;
 	let x2 = -Infinity;
-	let y1 = Infinity;
-	let y2 = -Infinity;
+	let y1 = format == 'days' ? 0 : Infinity;
+	let y2 = format == 'days' ? 400 : -Infinity;
 	data.forEach((d) => {
 		if (d.x < x1) x1 = d.x;
 		if (d.x > x2) x2 = d.x;
-		if (d.y < y1) y1 = d.y;
-		if (d.y > y2) y2 = d.y;
+		if (format !== 'days') {
+			if (d.y < y1) y1 = d.y;
+			if (d.y > y2) y2 = d.y;
+		}
 	});
 
 	const months = [
@@ -62,7 +64,7 @@
 
 <div class="chart">
 	<Pancake.Chart {x1} {x2} {y1} {y2}>
-		<Pancake.Grid horizontal count={3} let:value let:first>
+		<Pancake.Grid horizontal count={2} let:value let:first>
 			<div class="grid-line horizontal">
 				<span class:first>{format_y(value)}</span>
 			</div>
@@ -104,7 +106,7 @@
 <style>
 	.chart {
 		height: 270px;
-		padding: 0 1.75em 3em 4em;
+		padding: 1em 1.75em 3em 4em;
 		margin: 0 0 36px 0;
 		overflow: hidden;
 	}

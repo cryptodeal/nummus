@@ -81,7 +81,7 @@
 <style>
 	.chart {
 		height: 270px;
-		padding: 0 1.75em 3em 4em;
+		padding: 0.5em 1.75em 3em 4em;
 		margin: 0 0 36px 0;
 		overflow: hidden;
 	}
