@@ -6,7 +6,7 @@ specifiers:
   '@ethersproject/contracts': ^5.5.0
   '@ethersproject/providers': ^5.5.0
   '@ethersproject/units': ^5.5.0
-  '@sveltejs/adapter-vercel': ^1.0.0-next.0
+  '@sveltejs/adapter-vercel': next
   '@sveltejs/kit': next
   '@sveltejs/pancake': ^0.0.18
   '@walletconnect/web3-provider': ^1.6.6
@@ -35,7 +35,7 @@ dependencies:
   yootils: 0.3.1
 
 devDependencies:
-  '@sveltejs/adapter-vercel': 1.0.0-next.0
+  '@sveltejs/adapter-vercel': 1.0.0-next.31
   '@sveltejs/kit': 1.0.0-next.190_svelte@3.44.0
   eslint: 7.32.0
   eslint-config-prettier: 8.3.0_eslint@7.32.0
@@ -690,11 +690,13 @@ packages:
       picomatch: 2.3.0
     dev: true
 
-  /@sveltejs/adapter-vercel/1.0.0-next.0:
+  /@sveltejs/adapter-vercel/1.0.0-next.31:
     resolution:
       {
-        integrity: sha512-dQf40/2vrgRfuQ++tIAlvEgjdGUkXJTSjO5syqJd5oH2HDbP3Shi+2AxWpKAqRFGyRbXDe9ej0MK1G2soZP4fQ==
+        integrity: sha512-W8p/U00B6ihVrDpwMkgEexfVUzaLmn4MRtXj//Gw4NDFfsrZR4P5wBidrOAIkCYBMvqCOHD+vbAvIiAMOaN23g==
       }
+    dependencies:
+      esbuild: 0.13.9
     dev: true
 
   /@sveltejs/kit/1.0.0-next.190_svelte@3.44.0:
