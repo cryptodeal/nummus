@@ -392,14 +392,14 @@
 								<!--Staking Pool: Total Value Deposited-->
 								{#if poolData == null}
 									<td class="table-cell text-sm p-4 text-left border-b-0 font-medium animate-pulse">
-										<div class="cardLoading h-4 rounded-lg w-12" />
+										<div class="cardLoading h-4 rounded-lg w-16" />
 									</td>
 								{:else}
 									{#await poolData}
 										<td
 											class="table-cell text-sm p-4 text-left border-b-0 font-medium animate-pulse"
 										>
-											<div class="cardLoading h-4 w-12 rounded-lg w-full" />
+											<div class="cardLoading h-4 w-16 rounded-lg w-full" />
 										</td>
 									{:then { tvl }}
 										<td class="table-cell text-sm p-4 text-left border-b-0 font-medium">

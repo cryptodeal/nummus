@@ -1,4 +1,5 @@
 import { readable } from 'svelte/store';
+import { getTokenPrice } from '$lib/helpers/index';
 
 export const ohmGraph = readable(0, (set) => {
 	queryGraph()
@@ -18,6 +19,7 @@ export const ohmGraph = readable(0, (set) => {
 });
 
 const queryGraph = async () => {
+	const tokenPrice = await getTokenPrice('olympus');
 	const res = await fetch('https://api.thegraph.com/subgraphs/name/drondin/olympus-graph', {
 		method: 'POST',
 		headers: {
@@ -57,6 +59,7 @@ const queryGraph = async () => {
 		marketCap: parseFloat(graphData.data.protocolMetrics[0].marketCap),
 		circSupply: parseFloat(graphData.data.protocolMetrics[0].ohmCirculatingSupply),
 		totalSupply: parseFloat(graphData.data.protocolMetrics[0].totalSupply),
-		currentBlock: parseInt(graphData.data._meta.block.number)
+		currentBlock: parseInt(graphData.data._meta.block.number),
+		marketPrice: parseFloat(tokenPrice)
 	};
 };

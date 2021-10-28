@@ -14,6 +14,7 @@
 
 	let locale;
 	if (browser) locale = getUserLocale();
+	//$: console.log($ohmGraph)
 	$: tvl = $treasuryData
 		? $treasuryData.metrics.map((t) => {
 				return {
@@ -98,12 +99,28 @@
 						<!--Market Cap-->
 						<div class="summaryItem">
 							<h6 class="cardLabel">Market Cap</h6>
-							<h5 class="cardContent">$3,723,575,902</h5>
+							{#if locale && $ohmGraph.marketCap}
+								<h5 class="cardContent">
+									{formatCurrency($ohmGraph.marketCap, locale)}
+								</h5>
+							{:else}
+								<div class="flex justify-center cardLabel pt-2 animate-pulse">
+									<div class="cardLoading h-5 w-37 rounded-lg" />
+								</div>
+							{/if}
 						</div>
 						<!--OHM Price-->
 						<div class="summaryItem">
 							<h6 class="cardLabel">OHM Price</h6>
-							<h5 class="cardContent">$1,168.46</h5>
+							{#if locale && $ohmGraph.marketPrice}
+								<h5 class="cardContent">
+									${yootils.commas($ohmGraph.marketPrice.toFixed(2))}
+								</h5>
+							{:else}
+								<div class="flex justify-center cardLabel pt-2 animate-pulse">
+									<div class="cardLoading h-5 w-21 rounded-lg" />
+								</div>
+							{/if}
 						</div>
 						<!--wsOHM Price-->
 						<div class="summaryItem">
@@ -129,12 +146,30 @@
 						<!--Circulating Supply-->
 						<div class="summaryItem">
 							<h6 class="cardLabel">Circulating Supply (total)</h6>
-							<h5 class="cardContent">3166863 / 3948736</h5>
+							{#if $ohmGraph.circSupply && $ohmGraph.totalSupply}
+								<h5 class="cardContent">
+									{$ohmGraph.circSupply.toFixed()} / {$ohmGraph.totalSupply.toFixed()}
+								</h5>
+							{:else}
+								<div class="flex justify-center cardLabel pt-2 animate-pulse">
+									<div class="cardLoading h-5 w-45 rounded-lg" />
+								</div>
+							{/if}
 						</div>
 						<!--Backing per OHM-->
 						<div class="summaryItem">
 							<h6 class="cardLabel">Backing per OHM</h6>
-							<h5 class="cardContent">$186.76</h5>
+							{#if $ohmGraph.circSupply && $treasuryData?.metrics}
+								<h5 class="cardContent">
+									${yootils.commas(
+										($treasuryData.metrics[0].treasuryMarketValue / $ohmGraph.circSupply).toFixed(2)
+									)}
+								</h5>
+							{:else}
+								<div class="flex justify-center cardLabel pt-2 animate-pulse">
+									<div class="cardLoading h-5 w-19 rounded-lg" />
+								</div>
+							{/if}
 						</div>
 						<!--Current Index-->
 						<div class="summaryItem">
