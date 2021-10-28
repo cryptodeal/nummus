@@ -81,7 +81,8 @@
 		  })
 		: null;
 
-	//$: console.log(riskFreeVal);
+	//$: console.log(marketValTAssets);
+	//$: if($treasuryData) console.log($treasuryData.metrics[0])
 	//$: console.log(marketValTAssets)
 </script>
 
@@ -187,7 +188,7 @@
 										</h4>
 									{:else}
 										<div class="flex justify-start mr-5px cardLabel pt-2 animate-pulse">
-											<div class="cardLoading h-5 w-43 rounded-lg w-full" />
+											<div class="cardLoading h-5 w-44 rounded-lg w-full" />
 										</div>
 									{/if}
 									<h4 class="cardLabel font-normal">Today</h4>
@@ -226,7 +227,15 @@
 									<Expand />
 								</div>
 								<div class="flex">
-									<h4 class="cardContent font-semibold mr-5px">$591,434,167</h4>
+									{#if $treasuryData?.metrics}
+										<h4 class="cardContent font-semibold mr-5px">
+											${yootils.commas($treasuryData.metrics[0].treasuryMarketValue.toFixed(0))}
+										</h4>
+									{:else}
+										<div class="flex justify-start mr-5px cardLabel pt-2 animate-pulse">
+											<div class="cardLoading h-5 w-40.5 rounded-lg w-full" />
+										</div>
+									{/if}
 									<h4 class="cardLabel font-normal">Today</h4>
 								</div>
 							</div>
@@ -279,7 +288,7 @@
 										</h4>
 									{:else}
 										<div class="flex justify-start mr-5px cardLabel pt-2 animate-pulse">
-											<div class="cardLoading h-5 w-40.5 rounded-lg w-full" />
+											<div class="cardLoading h-5 w-37 rounded-lg w-full" />
 										</div>
 									{/if}
 									<h4 class="cardLabel font-normal">Today</h4>

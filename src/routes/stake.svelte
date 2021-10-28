@@ -90,7 +90,7 @@
 					<div class="w-full flex-wrap md:flex">
 						<!--Flex Item 1: APY-->
 						<div
-							class="flex-col items-start py-2 whitespace-nowrap overflow-ellipsis overflow-hidden md:(w-max-1/3 items-center)"
+							class="flex-col items-start w-full py-2 whitespace-nowrap overflow-ellipsis overflow-hidden md:(w-1/3 w-max-1/3 items-center)"
 						>
 							<h5 class="cardLabel">APY</h5>
 							<!--TODO: Add reactive APY based on contract-->
@@ -112,7 +112,7 @@
 						</div>
 						<!--Flex Item 2: Total Value Deposited-->
 						<div
-							class="flex-col items-start py-2 whitespace-nowrap overflow-ellipsis overflow-hidden md:(w-max-1/3 items-center)"
+							class="flex-col items-start w-full py-2 whitespace-nowrap overflow-ellipsis overflow-hidden md:(w-1/3 w-max-1/3 items-center)"
 						>
 							<h5 class="cardLabel">Total Value Deposited</h5>
 							<!--TODO: Add reactive Total Value Deposited based on contract-->
@@ -128,7 +128,7 @@
 						</div>
 						<!--Flex Item 3: Current Index-->
 						<div
-							class="flex-col items-start py-2 whitespace-nowrap overflow-ellipsis overflow-hidden md:(w-max-1/3 items-center)"
+							class="flex-col items-start w-full py-2 whitespace-nowrap overflow-ellipsis overflow-hidden md:(w-1/3 w-max-1/3 items-center)"
 						>
 							<h5 class="cardLabel">Current Index</h5>
 							<!--TODO: Add reactive Total Value Deposited based on contract-->

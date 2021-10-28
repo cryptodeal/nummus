@@ -49,6 +49,9 @@ const queryGraph = async () => {
 		throw new Error(`Bad response`);
 	}
 	const graphData = await res.json();
+	if (graphData.errors) {
+		throw new Error(`Graph query error: ${graphData.errors[0].message}`);
+	}
 	return {
 		stakingTVL: parseFloat(graphData.data.protocolMetrics[0].totalValueLocked),
 		marketCap: parseFloat(graphData.data.protocolMetrics[0].marketCap),

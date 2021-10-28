@@ -39,6 +39,9 @@ const queryGraph = async () => {
 		throw new Error(`Bad response`);
 	}
 	const r = await res.json();
+	if (r.errors) {
+		throw new Error(`Graph query error: ${r.errors[0].message}`);
+	}
 	let data = r.data.rebases.map((entry) => {
 		return {
 			apy: Math.pow(parseFloat(entry.percentage) + 1, 365 * 3) * 100,

@@ -63,6 +63,9 @@ const queryGraph = async () => {
 		throw new Error(`Bad response`);
 	}
 	const r = await res.json();
+	if (r.errors) {
+		throw new Error(`Graph query error: ${r.errors[0].message}`);
+	}
 	let metrics = r.data.protocolMetrics.map((entry) =>
 		Object.entries(entry).reduce((obj, [key, value]) => ((obj[key] = parseFloat(value)), obj), {})
 	);
