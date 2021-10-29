@@ -18,6 +18,14 @@ const formatCurrency = (value, precision = 0) => {
 	}).format(value);
 };
 
+const formatPercent = (value, precision = 0) => {
+	return new Intl.NumberFormat('en-US', {
+		style: 'percent',
+		maximumFractionDigits: precision,
+		minimumFractionDigits: precision
+	}).format(value / 100);
+};
+
 const getRebaseBlock = (currentBlock) => {
 	return currentBlock + EPOCH_INTERVAL - (currentBlock % EPOCH_INTERVAL);
 };
@@ -180,6 +188,7 @@ const getOhmLusdCrucibleData = async () => {
 
 export {
 	formatCurrency,
+	formatPercent,
 	prettifySeconds,
 	calcRebaseTime,
 	initWeb3,

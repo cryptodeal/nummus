@@ -231,6 +231,7 @@
 										data={tvl}
 										colors={[['#768299', '#98B3E9']]}
 										values={['totalValueLocked']}
+										labels={['Total Value Deposited']}
 									/>
 								{:else}
 									<div class="flex w-full h-full justify-center items-center">
@@ -286,6 +287,7 @@
 											'treasuryWETHMarketValue',
 											'treasuryXsushiMarketValue'
 										]}
+										labels={['DAI', 'FRAX', 'ETH', 'SUSHI']}
 									/>
 								{:else}
 									<div class="flex w-full h-full justify-center items-center">
@@ -336,6 +338,7 @@
 											['#000', '#fff']
 										]}
 										values={['treasuryDaiRiskFreeValue', 'treasuryFraxRiskFreeValue']}
+										labels={['DAI', 'FRAX']}
 									/>
 								{:else}
 									<div class="flex w-full h-full justify-center items-center">
@@ -382,6 +385,7 @@
 										format={'percent'}
 										colors={[['rgba(128, 204, 131, 1)', 'rgba(128, 204, 131, 0)']]}
 										values={['treasuryOhmDaiPOL']}
+										labels={['SLP Treasury', 'Market SLP']}
 									/>
 								{:else}
 									<div class="flex w-full h-full justify-center items-center">
@@ -428,6 +432,7 @@
 										format={'percent'}
 										colors={[['#55EBC7', '#47ACEB']]}
 										values={['staked']}
+										labels={['Staked', 'Not Staked']}
 									/>
 								{:else}
 									<div class="flex w-full h-full justify-center items-center">
