@@ -1,4 +1,3 @@
-import { getCurrency } from 'locale-currency';
 import { ethStore, web3, connected, makeContractStore, chainData } from '$lib/stores/api/wallet';
 import { web3Socket } from './stores/api/ethSocket';
 import { EPOCH_INTERVAL, BLOCK_RATE_SECONDS } from '$lib/const/index';
@@ -10,12 +9,12 @@ import { formatUnits } from '@ethersproject/units';
 import { calcAludelDetes } from '$lib/helpers/OhmLusdCrucible';
 import { Contract } from '@ethersproject/contracts';
 
-const formatCurrency = (value, locale, numDec) => {
-	return new Intl.NumberFormat(locale, {
+const formatCurrency = (value, precision = 0) => {
+	return new Intl.NumberFormat('en-US', {
 		style: 'currency',
-		currency: getCurrency(locale),
-		minimumFractionDigits: 0,
-		maximumFractionDigits: numDec ? numDec : 0
+		currency: 'USD',
+		maximumFractionDigits: precision,
+		minimumFractionDigits: precision
 	}).format(value);
 };
 
@@ -111,6 +110,17 @@ const initSohmMainContract = () => {
 
 const getContractData = async (stakingContract, sOhmMainContract) => {
 	// Calculating staking
+	if (stakingContract.subscribe && sOhmMainContract.subscribe) {
+		let stakeContract, sOhmContract;
+		stakingContract.subscribe((value) => {
+			stakeContract = value;
+		});
+		sOhmMainContract.subscribe((value) => {
+			sOhmContract = value;
+		});
+		stakingContract = stakeContract;
+		sOhmMainContract = sOhmContract;
+	}
 	const epoch = await stakingContract.epoch();
 	const stakingReward = epoch.distribute;
 	//console.log(stakingReward)

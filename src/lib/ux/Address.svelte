@@ -3,7 +3,11 @@
 	export let format;
 	export let linked = true;
 	$: formattedAddress =
-		format === 'middle-truncated' ? address.slice(0, 6) + '…' + address.slice(-4) : address;
+		format === 'short'
+			? address.slice(0, 6) + '…'
+			: format === 'middle-truncated'
+			? address.slice(0, 6) + '…' + address.slice(-4)
+			: address;
 </script>
 
 {#if linked}

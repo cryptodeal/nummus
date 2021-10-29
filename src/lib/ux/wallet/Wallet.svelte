@@ -1,11 +1,16 @@
 <script>
 	import { ethStore, connected, chainId } from '$lib/stores/api/wallet';
 	import { browser } from '$app/env';
+	import { onMount } from 'svelte';
 	import Blockie from '$lib/ux/Blockie.svelte';
 	import Address from '$lib/ux/Address.svelte';
+
 	let WalletConnectProvider;
+
 	const infuraId = import.meta.env.VITE_INFURA_ID;
-	$: if (browser) WalletConnectProvider = window.WalletConnectProvider.default;
+	onMount(() => {
+		WalletConnectProvider = window.WalletConnectProvider.default;
+	});
 
 	const walletConnectConfig = {
 		bridge: 'https://bridge.walletconnect.org',

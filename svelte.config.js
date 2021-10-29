@@ -15,9 +15,17 @@ const config = {
           transformMixedEsModules: true,
         },
       },
+      */
+
+			/*
       optimizeDeps: {
-				include: ['@walletconnect/web3-provider']
+				exclude: ['@walletconnect/web3-provider']
 			},
+      resolve: {
+        alias: {
+          process: 'process',
+        },
+      },
       */
 		}
 	}

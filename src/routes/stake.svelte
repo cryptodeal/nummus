@@ -1,6 +1,5 @@
 <script>
 	import { ohmGraph } from '$lib/stores/api/graph';
-	import getUserLocale from 'get-user-locale';
 	import { browser } from '$app/env';
 	import {
 		calcRebaseTime,
@@ -14,9 +13,6 @@
 	import { connected, web3 } from '$lib/stores/api/wallet';
 	import { trim } from '$lib/helpers/index';
 	import { web3Socket } from '$lib/stores/api/ethSocket';
-
-	let locale;
-	if (browser) locale = getUserLocale();
 
 	const formatTime = (block) => {
 		if (block) {
@@ -116,9 +112,9 @@
 						>
 							<h5 class="cardLabel">Total Value Deposited</h5>
 							<!--TODO: Add reactive Total Value Deposited based on contract-->
-							{#if locale && $ohmGraph.stakingTVL}
+							{#if $ohmGraph.stakingTVL}
 								<h4 class="cardContent font-medium">
-									{formatCurrency($ohmGraph.stakingTVL, locale)}
+									{formatCurrency($ohmGraph.stakingTVL)}
 								</h4>
 							{:else}
 								<div class="flex justify-start md:justify-center cardLabel pt-2 animate-pulse">
@@ -283,7 +279,7 @@
 										</td>
 									{:then { tvl }}
 										<td class="table-cell text-sm p-2 text-right border-b-0 font-medium"
-											>{formatCurrency(tvl, locale)}</td
+											>{formatCurrency(tvl)}</td
 										>
 									{:catch error}
 										<td
@@ -403,7 +399,7 @@
 										</td>
 									{:then { tvl }}
 										<td class="table-cell text-sm p-4 text-left border-b-0 font-medium">
-											{formatCurrency(tvl, locale)}</td
+											{formatCurrency(tvl)}</td
 										>
 									{:catch error}
 										<td class="table-cell text-sm p-4 text-red-700 text-left border-b-0 font-medium"

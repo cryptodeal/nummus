@@ -5,15 +5,10 @@
 	import { ohmGraph } from '$lib/stores/api/graph';
 	import { treasuryData } from '$lib/stores/api/treasuryMetrics';
 	import { rebaseData } from '$lib/stores/api/rebaseData';
-	import getUserLocale from 'get-user-locale';
-	import { browser } from '$app/env';
 	import { formatCurrency } from '$lib/utils';
 	import StackedArea from '$lib/ux/charts/StackedArea.svelte';
 	import Shadow from '$lib/ux/loading/Shadow.svelte';
 	import Line from '$lib/ux/charts/Line.svelte';
-
-	let locale;
-	if (browser) locale = getUserLocale();
 	//$: console.log($ohmGraph)
 	$: tvl = $treasuryData
 		? $treasuryData.metrics.map((t) => {
@@ -99,12 +94,12 @@
 						<!--Market Cap-->
 						<div class="summaryItem">
 							<h6 class="cardLabel">Market Cap</h6>
-							{#if locale && $ohmGraph.marketCap}
+							{#if $ohmGraph.marketCap}
 								<h5 class="cardContent">
-									{formatCurrency($ohmGraph.marketCap, locale)}
+									{formatCurrency($ohmGraph.marketCap)}
 								</h5>
 							{:else}
-								<div class="flex justify-center cardLabel pt-2 animate-pulse">
+								<div class="flex justify-start sm:justify-center cardLabel pt-2 animate-pulse">
 									<div class="cardLoading h-5 w-37 rounded-lg" />
 								</div>
 							{/if}
@@ -112,19 +107,19 @@
 						<!--OHM Price-->
 						<div class="summaryItem">
 							<h6 class="cardLabel">OHM Price</h6>
-							{#if locale && $ohmGraph.marketPrice}
+							{#if $ohmGraph.marketPrice}
 								<h5 class="cardContent">
-									${yootils.commas($ohmGraph.marketPrice.toFixed(2))}
+									{formatCurrency($ohmGraph.marketPrice, 2)}
 								</h5>
 							{:else}
-								<div class="flex justify-center cardLabel pt-2 animate-pulse">
+								<div class="flex justify-start sm:justify-center cardLabel pt-2 animate-pulse">
 									<div class="cardLoading h-5 w-21 rounded-lg" />
 								</div>
 							{/if}
 						</div>
 						<!--wsOHM Price-->
 						<div class="summaryItem">
-							<h6 class="cardLabel block">
+							<h6 class="cardLabel">
 								wsOHM Price
 								<div class="inline-flex justify-center self-center">
 									<svg
@@ -151,7 +146,7 @@
 									{$ohmGraph.circSupply.toFixed()} / {$ohmGraph.totalSupply.toFixed()}
 								</h5>
 							{:else}
-								<div class="flex justify-center cardLabel pt-2 animate-pulse">
+								<div class="flex justify-start sm:justify-center cardLabel pt-2 animate-pulse">
 									<div class="cardLoading h-5 w-45 rounded-lg" />
 								</div>
 							{/if}
@@ -166,14 +161,14 @@
 									)}
 								</h5>
 							{:else}
-								<div class="flex justify-center cardLabel pt-2 animate-pulse">
+								<div class="flex justify-start sm:justify-center cardLabel pt-2 animate-pulse">
 									<div class="cardLoading h-5 w-19 rounded-lg" />
 								</div>
 							{/if}
 						</div>
 						<!--Current Index-->
 						<div class="summaryItem">
-							<h6 class="cardLabel block">
+							<h6 class="cardLabel">
 								Current Index
 								<div class="inline-flex justify-center self-center">
 									<svg
@@ -217,9 +212,9 @@
 									<Expand />
 								</div>
 								<div class="flex">
-									{#if locale && $ohmGraph.stakingTVL}
+									{#if $ohmGraph.stakingTVL}
 										<h4 class="cardContent font-semibold mr-5px">
-											{formatCurrency($ohmGraph.stakingTVL, locale)}
+											{formatCurrency($ohmGraph.stakingTVL)}
 										</h4>
 									{:else}
 										<div class="flex justify-start mr-5px cardLabel pt-2 animate-pulse">
@@ -530,7 +525,13 @@
 
 <style>
 	.summaryItem {
-		@apply m-3px min-w-140px w-3/10;
+		@apply m-3px min-w-140px;
+	}
+
+	@media (min-width: 640px) {
+		.summaryItem {
+			@apply m-3px min-w-140px w-3/10;
+		}
 	}
 
 	.chartItem {
